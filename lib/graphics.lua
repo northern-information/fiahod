@@ -6,10 +6,8 @@ function graphics:draw_date()
 end
 
 function graphics:draw_ground()
-  -- self:mlrs(0, self.ground_y, 128, 0, 15)
   for i = 1, math.random(12, 24) do
-    local stone = math.random(0, 128)
-    self:mlrs(stone, self.ground_y, math.random(1, 8), 0, 15)
+    self:mlrs(math.random(0, 128), self.ground_y, math.random(1, 8), 0, 15)
   end
 end
 

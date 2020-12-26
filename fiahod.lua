@@ -13,6 +13,7 @@ graphics = include("lib/graphics")
 
 function init()
   graphics.init()
+  message = ""
   screen_dirty = false
   times_arrow = 1
   year = 1970
@@ -22,6 +23,17 @@ function init()
   plant_count = 6
   plants = {}
   seed_plants()
+  -- encs
+  encs = {}
+  encs.counters = {}
+  encs.wait_length_in_seconds = .5
+  for e = 1, 3 do fn.reset_counter(e) end
+  encs.indicator = metro.init()
+  encs.indicator.count = -1
+  encs.indicator.play = 1
+  encs.indicator.event = fn.update_lengths
+  encs.indicator:start()
+  -- clocks
   my_clock = Softclock:new(8)
   -- my_clock:add("a", 1, function() print("whole notes") end)
   -- my_clock:add("b", 1/4, function() print("quarter notes") end)
@@ -29,6 +41,11 @@ function init()
   my_clock_id = my_clock:run()
   redraw_clock_id = clock.run(redraw_clock)
 end
+
+
+
+
+
 
 function seed_plants()
   plants = {}
@@ -38,7 +55,8 @@ function seed_plants()
     plant.x = math.random(8, 120)
     plant.age = 0
     plant.height = math.random(0, 10)
-    plant.neck = math.random(20, 30)
+    plant.max_height = math.random(15, 40)
+    plant.neck = math.random(plant.max_height, plant.max_height + 10)
     plant.neck_direction = math.random(1, 2)
     plant.root_depth = math.random(3, 9)
     plant.root_node_count = math.random(3, 5)
@@ -68,6 +86,7 @@ end
 
 function advance_event()
   times_arrow = times_arrow + 1
+  graphics:roll()
   time()
   if times_arrow % 4 == 1 then
     month = fn.wrap(month + 1, 1, 12)
@@ -81,13 +100,28 @@ function advance_event()
 end
 
 function enc(e, d)
+  if encs.counters[e]["this_clock"] ~= nil then
+    clock.cancel(encs.counters[e]["this_clock"])
+    fn.reset_counter(e)
+  end
+  update_value(e, d)
+  screen_dirty = true
+  if encs.counters[e]["this_clock"] == nil then
+    encs.counters[e]["this_clock"] = clock.run(fn.wait, e)
+  end
+end
+
+function update_value(e, d)
   if e == 1 then
     local tempo = params:get("clock_tempo")
     params:set("clock_tempo", util.clamp(tempo + d, 20, 300))
+    message = "BPM: " .. params:get("clock_tempo")
   elseif e == 2 then
     volume = util.clamp(volume + d, 0, 100)
+    message = "Volume: " .. volume
   elseif e == 3 then
-    plant_count = util.clamp(plants + d, 0, 6)
+    plant_count = util.clamp(plant_count + d, 0, 6)
+    message = "Plants: " .. plant_count
   end
 end
 
@@ -103,7 +137,7 @@ end
 
 function redraw()
   graphics:setup()
-  graphics:draw_date()
+  graphics:draw_text()
   graphics:draw_ground()
   graphics:draw_plants()
   graphics:teardown()

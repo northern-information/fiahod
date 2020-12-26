@@ -38,7 +38,8 @@ function seed_plants()
     plant.x = math.random(8, 120)
     plant.age = 0
     plant.height = math.random(0, 10)
-    plant.neck = math.random(11, 20)
+    plant.neck = math.random(20, 30)
+    plant.neck_direction = math.random(1, 2)
     plant.root_depth = math.random(3, 9)
     plant.root_node_count = math.random(3, 5)
     plant.root_nodes = {}
@@ -54,6 +55,7 @@ end
 
 function time()
   for k, plant in pairs(plants) do
+    plant.age = plant.age + 1
     if season == 1 then -- winter
       plant.height = util.clamp(plant.height - math.random(1, 5), 1, 30)
     elseif season == 2 then -- spring

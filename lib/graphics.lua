@@ -15,7 +15,26 @@ end
 
 function graphics:draw_plants()
   for k, plant in pairs(plants) do
-    self:mlrs(plant.x, self.ground_y, 0, -plant.height, 15)
+    local head_x, head_y = 0, 0
+    if plant.height < plant.neck then
+      head_x = plant.x
+      head_y = self.ground_y - plant.height
+      self:mlrs(plant.x, self.ground_y, 0, - plant.height, 15) -- stalk
+    else
+      local delta = plant.height - plant.neck
+      local direction = plant.neck_direction == 1 and -1 or 1
+      head_x = plant.x + (direction * delta)
+      head_y = self.ground_y - plant.height
+      self:mlrs(plant.x, self.ground_y, 0, - plant.neck, 15) -- stalk
+      self:mlrs(plant.x, self.ground_y - plant.neck, direction * delta, -4, 15) -- neck
+    end
+    if month > 3 and month < 11 then
+      if month < 8 then
+        self:circle(head_x, head_y, math.random(2, 5), 15)
+      else
+        self:circle(head_x, head_y, math.random(1, 3), 15)
+      end
+    end
   end
 end
 

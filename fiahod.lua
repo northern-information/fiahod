@@ -19,6 +19,7 @@ function init()
   year = 1970
   month = 3
   season = 2
+  fall = 0
   volume = 100
   plant_count = 6
   plants = {}
@@ -44,6 +45,7 @@ end
 
 function seed_plants()
   plants = {}
+  fall = 0
   if plants == 0 then return end
   for i = 1, plant_count do
     local plant = {}
@@ -51,45 +53,44 @@ function seed_plants()
     plant.age = 0
     plant.height = math.random(0, 10)
     plant.max_height = math.random(15, 40)
-    plant.neck = math.random(plant.max_height, plant.max_height + 10)
+    plant.neck = plant.max_height - 4
     plant.neck_direction = math.random(1, 2)
+    plant.fallen = false
+    plant.head_x = 0
+    plant.head_y = 0
     plant.roots = {}
     for i = 1, math.random(3, 5) do
       local root = {}
       root.x = math.random(-12, 12)
-      root.length = math.random(3, 10)
+      root.length = 0
       plant.roots[i] = root
     end
     plants[i] = plant
   end
 end
 
-function root_movement(val)
-  for k, plant in pairs(plants) do
-    for kk, root in pairs(plant.roots) do
-      if math.random(1, 3) == 1 then 
-        local l = 0
-        if season == 1 or season == 4 then
-          l = math.random(1, 2) == 1 and 0 or -1
-        elseif season == 2 then
-          l = math.random(1, 5)
-        end
-        root.length = util.clamp(root.length + l, 1, math.random(5, 14))
-      end
-    end
-  end
-end
-
 function time()
-  root_movement(season)
   for k, plant in pairs(plants) do
     plant.age = plant.age + 1
+    -- stalk growth
     if season == 1 then -- winter
       plant.height = util.clamp(plant.height - math.random(1, 5), 1, 30)
     elseif season == 2 then -- spring
       plant.height = util.clamp(plant.height + math.random(1, 5), 1, 30)
     else -- summer & fall
       plant.height = util.clamp(plant.height + math.random(-3, 3), 1, 30)
+    end
+    -- roots
+    for kk, root in pairs(plant.roots) do
+      if math.random(1, 3) == 1 then 
+        local l = 0
+        if season == 1 or season == 4 then -- winter and fall
+          l = math.random(1, 2) == 1 and 0 or -1
+        elseif season == 2 then -- spring
+          l = math.random(1, 5)
+        end
+        root.length = util.clamp(root.length + l, 1, math.random(5, 14))
+      end
     end
   end
 end

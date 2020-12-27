@@ -53,11 +53,18 @@ function seed_plants()
     plant.age = 0
     plant.height = math.random(0, 10)
     plant.max_height = math.random(15, 40)
-    plant.neck = plant.max_height - 4
-    plant.neck_direction = math.random(1, 2)
-    plant.fallen = false
-    plant.head_x = 0
-    plant.head_y = 0
+    plant.necks = {}
+    for i = 1, math.random(1, 3) do
+      local neck = {}
+      neck.y = plant.max_height - math.random(1, 15)
+      neck.direction = math.random(1, 2)
+      neck.fallen = false
+      neck.head_x = 0
+      neck.head_y = graphics.ground_y - plant.height
+      neck.head_r = 0
+      neck.head_l = 15
+      plant.necks[i] = neck
+    end
     plant.roots = {}
     for i = 1, math.random(3, 5) do
       local root = {}
@@ -79,6 +86,11 @@ function time()
       plant.height = util.clamp(plant.height + math.random(1, 5), 1, 30)
     else -- summer & fall
       plant.height = util.clamp(plant.height + math.random(-3, 3), 1, 30)
+    end
+    for kk, neck in pairs(plant.necks) do
+      if month < 10 then
+        neck.head_y = graphics.ground_y - plant.height
+      end
     end
     -- roots
     for kk, root in pairs(plant.roots) do
@@ -136,6 +148,7 @@ function update_value(e, d)
   elseif e == 3 then
     plant_count = util.clamp(plant_count + d, 0, 6)
     message = "Plants: " .. plant_count
+    seed_plants()
   end
 end
 

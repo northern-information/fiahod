@@ -19,6 +19,9 @@ function graphics:roll()
     dirt.w = math.random(1, 8)
     self.ground[i] = dirt
   end
+  for k, plant in pairs(plants) do
+    plant.head = month < 8 and math.random(2, 3) or math.random(1, 2)
+  end
 end
 
 function graphics:draw_text()
@@ -48,11 +51,7 @@ function graphics:draw_plants()
       self:mls(plant.x, self.ground_y - plant.neck, head_x, head_y, 15) -- neck
     end
     if month > 3 and month < 11 then
-      if month < 8 then
-        self:circle(head_x, head_y, math.random(2, 3), 15)
-      else
-        self:circle(head_x, head_y, math.random(1, 2), 15)
-      end
+      self:circle(head_x, head_y, plant.head, 15)
     end
   end
 end

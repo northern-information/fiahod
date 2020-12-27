@@ -17,7 +17,7 @@ function init()
   screen_dirty = false
   times_arrow = 1
   year = 1970
-  month = 3
+  month = 4
   season = 2
   fall = 0
   volume = 100
@@ -53,17 +53,20 @@ function seed_plants()
     plant.age = 0
     plant.height = math.random(0, 10)
     plant.max_height = math.random(15, 40)
-    plant.necks = {}
+    plant.branchs = {}
     for i = 1, math.random(1, 3) do
-      local neck = {}
-      neck.y = plant.max_height - math.random(1, 15)
-      neck.direction = math.random(1, 2)
-      neck.fallen = false
-      neck.head_x = 0
-      neck.head_y = graphics.ground_y - plant.height
-      neck.head_r = 0
-      neck.head_l = 15
-      plant.necks[i] = neck
+      local branch = {}
+      branch.y = plant.max_height - math.random(1, 15)
+      branch.direction = math.random(1, 2) == 1 and -1 or 1
+      branch.head_x_rel = 0
+      branch.head_x_rel_max = math.random(4, 7)
+      branch.head_y_rel = 0
+      branch.head_y_rel_max = math.random(3, 15)
+      branch.head_r = 0
+      branch.head_l = 15
+      branch.fallen = false
+      branch.fallen_distance = 0
+      plant.branchs[i] = branch
     end
     plant.roots = {}
     for i = 1, math.random(3, 5) do
@@ -81,15 +84,32 @@ function time()
     plant.age = plant.age + 1
     -- stalk growth
     if season == 1 then -- winter
-      plant.height = util.clamp(plant.height - math.random(1, 5), 1, 30)
+      plant.height = util.clamp(plant.height - math.random(1, 5), 1, plant.max_height)
     elseif season == 2 then -- spring
-      plant.height = util.clamp(plant.height + math.random(1, 5), 1, 30)
+      plant.height = util.clamp(plant.height + math.random(1, 5), 1, plant.max_height)
     else -- summer & fall
-      plant.height = util.clamp(plant.height + math.random(-3, 3), 1, 30)
+      plant.height = util.clamp(plant.height + math.random(1, 3), 1, plant.max_height)
     end
-    for kk, neck in pairs(plant.necks) do
-      if month < 10 then
-        neck.head_y = graphics.ground_y - plant.height
+    -- branches
+    for kk, branch in pairs(plant.branchs) do
+      if math.random(1, 3) == 1 then 
+        local l = 0
+        if season == 1 or season == 4 then -- winter and fall
+          l = math.random(1, 2) == 1 and 0 or -1
+        elseif season == 2 then -- spring
+          l = math.random(1, 5)
+        end
+        branch.head_x_rel = util.clamp(branch.head_x_rel + l, 1, branch.head_x_rel_max)
+        branch.head_y_rel = util.clamp(branch.head_y_rel + l, 1, branch.head_y_rel_max)
+      end
+      if month > 9 then
+        if not branch.fallen then
+          branch.fallen = math.random(1, 2) == 1
+        end
+        if branch.fallen then
+          branch.head_l = util.clamp(branch.head_l - 3, 1, 15)
+          branch.fallen_distance = branch.fallen_distance + 5
+        end
       end
     end
     -- roots
@@ -104,6 +124,7 @@ function time()
         root.length = util.clamp(root.length + l, 1, math.random(5, 14))
       end
     end
+
   end
 end
 

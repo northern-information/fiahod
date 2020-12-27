@@ -20,8 +20,8 @@ function graphics:roll()
     self.ground[i] = dirt
   end
   for k, plant in pairs(plants) do
-    for kk, neck in pairs(plant.necks) do
-      neck.head_r = month < 10 and math.random(2, 3) or neck.head_r
+    for kk, branch in pairs(plant.branchs) do
+      branch.head_r = month < 10 and math.random(1, 2) or branch.head_r
     end
   end
 end
@@ -40,36 +40,24 @@ end
 
 function graphics:draw_plants()
   for k, plant in pairs(plants) do
+
     -- roots
     for k, root in pairs(plant.roots) do
       self:mlrs(plant.x, self.ground_y, root.x, root.length, 1)
     end
 
-  for k, neck in pairs(plant.necks) do
-      -- stalks (with data about the head)
-      -- neck.head_y = self.ground_y - plant.height
-      if plant.height < neck.y then
-        neck.head_x = plant.x
-        self:mlrs(plant.x, self.ground_y, 0, - plant.height, 15) -- stalk
-      else
-        local delta = plant.height - neck.y
-        local direction = neck.direction == 1 and -1 or 1
-        neck.head_x = plant.x + (direction * delta)
-        self:mlrs(plant.x, self.ground_y, 0, - neck.y, 15) -- stalk
-        self:mls(plant.x, self.ground_y - neck.y, neck.head_x, neck.head_y, 15) -- neck
-      end
-      -- heads
-      if month > 3 and month < 10 then
-        self:circle(neck.head_x, neck.head_y, neck.head_r, 15)
-      elseif month > 9 then
-        if not neck.fallen then
-          neck.fallen = math.random(1, 2) == 1
-        end
-        if neck.fallen then
-          neck.head_y = util.clamp(neck.head_y + 3, 0, self.ground_y)
-          neck.head_l = util.clamp(neck.head_l - 3, 1, 15)
-        end
-        self:circle(neck.head_x, neck.head_y, neck.head_r, neck.head_l)
+    -- stalks
+    self:mlrs(plant.x, self.ground_y, 0, - plant.height, 15) -- stalk
+
+    -- branches
+    for k, branch in pairs(plant.branchs) do
+      if plant.height > branch.y then
+        local head_x_abs = plant.x + (branch.direction * branch.head_x_rel)
+        local head_y_abs = self.ground_y - branch.y - branch.head_y_rel
+        -- branch
+        self:mls(plant.x, self.ground_y - branch.y, head_x_abs, head_y_abs, 15)
+        -- heads
+        self:circle(head_x_abs, util.clamp(head_y_abs + branch.fallen_distance, 0, self.ground_y), branch.head_r, branch.head_l)
       end
     end
   end

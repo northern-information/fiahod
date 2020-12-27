@@ -38,6 +38,7 @@ end
 
 function graphics:draw_plants()
   for k, plant in pairs(plants) do
+    -- stalks (with data about the head)
     local head_x, head_y = 0, 0
     head_y = self.ground_y - plant.height
     if plant.height < plant.neck then
@@ -50,8 +51,13 @@ function graphics:draw_plants()
       self:mlrs(plant.x, self.ground_y, 0, - plant.neck, 15) -- stalk
       self:mls(plant.x, self.ground_y - plant.neck, head_x, head_y, 15) -- neck
     end
+    -- head
     if month > 3 and month < 11 then
       self:circle(head_x, head_y, plant.head, 15)
+    end
+    -- roots
+    for k, root in pairs(plant.roots) do
+      self:mlrs(plant.x, self.ground_y, root.x, root.length, 1)
     end
   end
 end

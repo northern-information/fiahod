@@ -49,7 +49,7 @@ function fn.get_season(n)
   return seasons[n]
 end
 
-function rerun()
+function r()
   norns.script.load(norns.state.script)
 end
 

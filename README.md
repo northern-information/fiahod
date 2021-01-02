@@ -5,6 +5,7 @@ a script generative musical script for [norns](https://monome.org/norns/). sit b
 
 ---
 
+```
 The Project Gutenberg EBook of The Waste Land, by T. S. Eliot
 
 This eBook is for the use of anyone anywhere at no cost and with
@@ -1174,3 +1175,4 @@ This Web site includes information about Project Gutenberg-tm,
 including how to make donations to the Project Gutenberg Literary
 Archive Foundation, how to help produce our new eBooks, and how to
 subscribe to our email newsletter to hear about new eBooks.
+```

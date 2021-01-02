@@ -5,7 +5,7 @@
 -- "i will show you fear
 --     in a handful of dust"
 --
--- @tyleretters & @license, 2020
+-- @tyleretters & @license, 2020/2021
 
 Softclock = include("lib/Softclock")
 fn = include("lib/functions")
@@ -181,6 +181,7 @@ function update_value(e, d)
     message = "BPM: " .. params:get("clock_tempo")
   elseif e == 2 then
     volume = util.clamp(volume + d, 0, 100)
+    engine.set_volume(volume)
     message = "Volume: " .. volume
   elseif e == 3 then
     plant_count = util.clamp(plant_count + d, 0, 6)

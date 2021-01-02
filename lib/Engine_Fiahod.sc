@@ -20,8 +20,8 @@ Engine_Fiahod : CroneEngine {
         // fudging it and doing a .collect
         // fix PRs welcome ;)
         "defining delay".postln;
-        delay = {
-            var inSig = In.ar(delayBus, 2);
+        delay = {|volume=1|
+            var inSig = In.ar(delayBus, 2) * 0.7;
             var lfoSpeeds = (4..11).nthPrime / 100;
             var delays = lfoSpeeds.collect({|lfoSpeed|
                 var delayTime = SinOsc.kr(lfoSpeed, 0, 0.02 * lfoSpeeds.max / lfoSpeed, 0.1.rrand(0.9));
@@ -30,7 +30,7 @@ Engine_Fiahod : CroneEngine {
                 Pan2.ar(delay, panPos);
             });
             // inSig + Mix.ar(delays / delays.size);
-            Out.ar(0, inSig + Mix.ar(delays / delays.size * 1.6));
+            Out.ar(0, inSig * 1.2 + Mix.ar(delays / delays.size * 1.6) * volume.lag(0.2));
             // Out.ar(0, CombN.kr(in: 0.0, maxdelaytime: 0.2, delaytime: 0.2, decaytime: 1.0))
             // Out.ar(0, inSig + CombN.ar(inSig, 1, 0.2, 5));
         }.play;
@@ -41,7 +41,7 @@ Engine_Fiahod : CroneEngine {
             amp=0.1, 
             carDust=0.5,
             delayOut, 
-            delayRatio=0.8, 
+            // delayRatio=0.8, 
             dust=0, 
             envRadius=1, 
             feedback=1, 
@@ -88,8 +88,9 @@ Engine_Fiahod : CroneEngine {
             car = (mod.tanh * ampEnv + car.asin).sin;
             // sig = Pan2.ar(car * ampEnv * amp * ampDust, pan);
             sig = Pan2.ar(car, pan);
-            Out.ar(0, sig * (1 - delayRatio));
-            Out.ar(delayOut, sig * (delayRatio));
+            // Out.ar(0, sig * (1 - delayRatio));
+            // Out.ar(delayOut, sig * (delayRatio));
+            Out.ar(delayOut, sig);
             // Out.ar(0, car ! 2);
         // });
         }).add;
@@ -107,17 +108,18 @@ Engine_Fiahod : CroneEngine {
         this.addCommand("pluck_stalk", "if", {|msg|
             var index = msg[1];
             var height = msg[2];
-            // "pluck stalk".postln;
-            // msg.postln;
             this.pluckStalk(index, height)
         });
 
         this.addCommand("set_stalk", "if", {|msg|
             var index = msg[1];
             var pan = msg[2];
-            "set stalk".postln;
-            msg.postln;
             this.setStalk(index, pan)
+        });
+
+        this.addCommand("set_volume", "f", {|msg|
+            var newVolume = msg[1];
+            delay.set(\volume, newVolume.max(0).min(100) / 100);
         });
     }
 
@@ -130,7 +132,7 @@ Engine_Fiahod : CroneEngine {
 
         detuneSemi = 0.15.rand2;
         baseParams = (
-            delayRatio: 0.8,
+            // delayRatio: 0.8,
             envRadius: 1.0.rand(6.0),
             delayOut: delayBus.index,
             modSemiOffset: detuneSemi * 2,
@@ -196,8 +198,8 @@ Engine_Fiahod : CroneEngine {
             degreeIndex: degreeRange.choose,
             dust: 2.0.rrand(20.0)
         );
-        ("made new stalk at index " ++ index).postln;
-        stalks[index].postln;
+        // ("made new stalk at index " ++ index).postln;
+        // stalks[index].postln;
     }
 
     free {

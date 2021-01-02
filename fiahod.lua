@@ -5,7 +5,7 @@
 -- "i will show you fear
 --     in a handful of dust"
 --
--- @tyleretters & @license, 2020/2021
+-- @tyleretters & @license, MMXXI
 
 Softclock = include("lib/Softclock")
 fn = include("lib/functions")

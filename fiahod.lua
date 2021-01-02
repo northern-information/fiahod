@@ -11,6 +11,8 @@ Softclock = include("lib/Softclock")
 fn = include("lib/functions")
 graphics = include("lib/graphics")
 
+engine.name = 'Fiahod'
+
 function init()
   graphics.init()
   message = ""
@@ -54,6 +56,11 @@ function seed_plants()
     plant.height = math.random(0, 10)
     plant.max_height = math.random(15, 40)
     plant.branchs = {}
+    
+    print('setting stalk...')
+    engine.set_stalk(i, plant.x/64 - 1)
+    print('...set stalk.')
+    
     for i = 1, math.random(1, 3) do
       local branch = {}
       branch.y = plant.max_height - math.random(1, 15)
@@ -83,12 +90,21 @@ function time()
   for k, plant in pairs(plants) do
     plant.age = plant.age + 1
     -- stalk growth
+    local new_height = plant.height
     if season == 1 then -- winter
-      plant.height = util.clamp(plant.height - math.random(1, 5), 1, plant.max_height)
+      new_height = util.clamp(plant.height - math.random(1, 5), 1, plant.max_height)
     elseif season == 2 then -- spring
-      plant.height = util.clamp(plant.height + math.random(1, 5), 1, plant.max_height)
+      new_height = util.clamp(plant.height + math.random(1, 5), 1, plant.max_height)
     else -- summer & fall
-      plant.height = util.clamp(plant.height + math.random(1, 3), 1, plant.max_height)
+      new_height = util.clamp(plant.height + math.random(1, 3), 1, plant.max_height)
+    end
+    -- can't decide which flavor I like better:
+    -- if new_height ~= plant.height then -- only when height changes
+    if true then -- always on
+        plant.height = new_height
+        print('plucking stalk...')
+        engine.pluck_stalk(k, new_height)
+        print('...plucked stalk.')
     end
     -- branches
     for kk, branch in pairs(plant.branchs) do

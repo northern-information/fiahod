@@ -1,7 +1,7 @@
 # fiahod
 i will show you fear in a handful of dust
 
-a script generative musical script for [norns](https://monome.org/norns/). sit back and watch the weather change.
+a generative musical script for [norns](https://monome.org/norns/). sit back and watch the weather change.
 
 ---
 

@@ -36,10 +36,13 @@ function Softclock.pulse(s)
     clock.sync(1/s.ppqn)
     -- really wish there was a continue statment...
     if s.is_playing then
-      s.transport = s.transport + 1
-      if s.advance_event ~= nil and s.transport % (s.ppqn * s.meter) == 1 then
+      local ticks_cycle = s.ppqn * s.meter
+      if s.advance_event ~= nil and math.floor(s.transport % ticks_cycle) == 0 then
         s.advance_event(s.transport)
       end
+
+      s.transport = s.transport + 1
+
       for id, clock in pairs(s.clocks) do
         if clock.is_playing then
           -- print might need to check if not nil for race conditions with remove()
@@ -81,6 +84,10 @@ end
 -- @tparam number ppqn the ppqn of the superclock
 function Softclock:change_ppqn(ppqn)
   self.ppqn = ppqn
+end
+
+function Softclock:get_ppqn()
+  return self.ppqn
 end
 
 --- cancel the softclock

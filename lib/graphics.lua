@@ -10,7 +10,7 @@ function graphics.init()
   graphics.plants = {}
 end
 
-function graphics:roll()
+function graphics:roll(month)
   self.ground = {}
   self.plants = {}
   for i = 1, math.random(12, 24) do
@@ -26,10 +26,10 @@ function graphics:roll()
   end
 end
 
-function graphics:draw_text()
-  self:text(0, self.baseline_y, fn.get_month(month) .. ", " .. year, 1)
-  self:text(50, self.baseline_y, message, 15)
-  self:text_right(128, self.baseline_y, fn.get_season(season), 1)
+function graphics:draw_text(state)
+  self:text(0, self.baseline_y, fn.get_month(state.month) .. ", " .. state.year, 1)
+  self:text(50, self.baseline_y, state.message, 15)
+  self:text_right(128, self.baseline_y, fn.get_season(state.season), 1)
 end
 
 function graphics:draw_ground()

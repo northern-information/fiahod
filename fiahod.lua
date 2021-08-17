@@ -7,7 +7,7 @@
 --
 -- @tyleretters & @license, MMXXI
 
-Softclock = include("lib/Softclock")
+lattice = require("lattice")
 fn = include("lib/functions")
 graphics = include("lib/graphics")
 state = include("lib/state")
@@ -18,23 +18,25 @@ engine.name = 'Fiahod'
 state.init()
 
 function init()
-    print(wat or state.test)
   graphics.init()
-
   plants = {}
   seed_plants()
-  init_encs() -- what is encs?
+  init_encoders()
   for e = 1, 3 do fn.reset_counter(e) end
-  -- clocks
-  my_clock = Softclock:new(state.ppqn, state.meter)
-  -- my_clock:add("a", 1, function() print("whole notes") end)
-  -- my_clock:add("b", 1/4, function() print("quarter notes") end)
-  my_clock.advance_event = advance_event
-  my_clock_id = my_clock:run()
+  fear_lattice = lattice:new{
+    auto = true,
+    meter = state.meter,
+    ppqn = state.ppqn
+  }
+  fear_pattern = fear_lattice:new_pattern{
+    action = function(t) advance_event() end,
+    division = 1
+  }
+  fear_lattice:start()
   redraw_clock_id = clock.run(redraw_clock)
 end
 
-function init_encs()
+function init_encoders()
   encs = {}
   encs.counters = {}
   encs.wait_length_in_seconds = .5
@@ -188,8 +190,3 @@ function redraw()
   graphics:draw_plants()
   graphics:teardown()
 end
-
-function cleanup()
-  my_clock:cancel()
-end
-
